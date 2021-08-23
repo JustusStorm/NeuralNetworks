@@ -55,6 +55,25 @@ x_train= np.array(x_train)
 y_train = np.array(y_train)
 
 
-# reshape the data so tensorflow will accept it
+# reshape the data so tensorflow will accept it (has to be 3 demensional)
 x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 print(x_train.shape)
+
+
+
+
+
+# build the LSTM Model  
+model = Sequential()
+model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1], 1)))
+model.add(LSTM(50, return_sequences=False))
+model.add(Dense(25))
+model.add(Dense(1))
+
+
+
+# compile the model 
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# train the model 
+model.fit(x_train, y_train, batch_size=1, epochs=3)
