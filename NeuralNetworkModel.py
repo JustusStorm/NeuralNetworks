@@ -61,8 +61,6 @@ print(x_train.shape)
 
 
 
-
-
 # build the LSTM Model  
 model = Sequential()
 model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1], 1)))
@@ -76,4 +74,44 @@ model.add(Dense(1))
 model.compile(optimizer='adam', loss='mean_squared_error')
 
 # train the model 
-model.fit(x_train, y_train, batch_size=1, epochs=5)
+model.fit(x_train, y_train, batch_size=1, epochs=1)
+
+
+
+
+
+
+
+# create the testing data set
+# create a new array containing scaled values from index 1543 to 2003
+test_data = scaled_df[training_data_len - 60:, :]
+x_test = []
+y_test = test_data[training_data_len: ]
+
+for i in range(60, len(test_data)):
+    x_test.append(test_data[i-60:i, 0])
+
+
+# convert data to numpy array 
+x_test = np.array(x_test)
+
+# reshape the data 
+x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+
+# get models predicted price values
+predictions = model.predict(x_test)
+inversedPredictions = scaler.inverse_transform(predictions)
+
+
+
+
+
+# plot test predictions
+plt.figure(figsize=(16,8))
+plt.plot(y_test, color='black')
+plt.plot(inversedPredictions, color = 'green')
+plt.title('S%P 500 Daily Timeseries')
+plt.xlabel('Time')
+plt.ylabel('Price (Points)')
+plt.legend()
+plt.show()
