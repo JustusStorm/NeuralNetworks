@@ -143,7 +143,7 @@ x_train.shape[1]
 
 # ## Build the model
 
-# In[30]:
+# In[76]:
 
 
 # Build the LSTM model 
@@ -154,7 +154,7 @@ model.add(Dense(25))
 model.add(Dense(1))
 
 
-# In[31]:
+# In[77]:
 
 
 # Compile the model 
@@ -163,16 +163,16 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 
 # ## Train the model
 
-# In[32]:
+# In[112]:
 
 
 # Train the model 
-model.fit(x_train, y_train, batch_size=1, epochs=2)
+model.fit(x_train, y_train, batch_size=5, epochs=5)
 
 
 # ## Create Test Data set
 
-# In[37]:
+# In[113]:
 
 
 # Create the testing dataset 
@@ -180,7 +180,7 @@ model.fit(x_train, y_train, batch_size=1, epochs=2)
 test_data = scaled_data[training_data_len-60: , :]
 
 
-# In[38]:
+# In[114]:
 
 
 # Create the data sets x_test and y_test
@@ -191,14 +191,14 @@ for i in range(60, len(test_data)):
     x_test.append(test_data[i-60:i, 0])
 
 
-# In[40]:
+# In[115]:
 
 
 # Convert the data to numpy array
 x_test = np.array(x_test)
 
 
-# In[42]:
+# In[116]:
 
 
 # Reshape the data 
@@ -207,7 +207,7 @@ x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
 # ## Get Predictions 
 
-# In[43]:
+# In[117]:
 
 
 # Get the models predicted price values 
@@ -215,7 +215,7 @@ predictions = model.predict(x_test)
 predictions = scaler.inverse_transform(predictions)
 
 
-# In[44]:
+# In[118]:
 
 
 # Get the root mean squared error (RMSE)
@@ -225,7 +225,7 @@ rmse
 
 # ## Plot Data
 
-# In[45]:
+# In[119]:
 
 
 # Plot the data
@@ -234,7 +234,7 @@ valid = data[training_data_len:]
 valid['Predictions'] = predictions
 
 
-# In[48]:
+# In[120]:
 
 
 # Visualize the data 
@@ -247,7 +247,7 @@ plt.plot(valid[['Close', 'Predictions']])
 plt.legend(['Train', 'Val', 'Predictions'], loc='lower right')
 
 
-# In[49]:
+# In[122]:
 
 
 # Show the valid and predicted prices 
@@ -256,49 +256,49 @@ valid
 
 # ## Predicting future price
 
-# In[51]:
+# In[124]:
 
 
 # Get the quote
 apple_quote = web.DataReader('AAPL', data_source='yahoo', start='2012-01-01', end='2019-12-17')
 
 
-# In[60]:
+# In[125]:
 
 
 # Create new dataframe
 new_df = apple_quote.filter(['Close'])
 
 
-# In[61]:
+# In[126]:
 
 
 # Get the last 60 day closing price calues and convert the dataframe to an array 
 last_60_days = new_df[-60:].values 
 
 
-# In[62]:
+# In[127]:
 
 
 # Scale the data to be values between 0 and 1 
 last_60_days_scaled = scaler.transform(last_60_days)
 
 
-# In[63]:
+# In[128]:
 
 
 # Create an empty list 
 X_test = []
 
 
-# In[64]:
+# In[129]:
 
 
 # Append the last 60 days 
 X_test.append(last_60_days_scaled)
 
 
-# In[75]:
+# In[131]:
 
 
 # Convert X_test dataset to numpy array 
@@ -306,21 +306,21 @@ X_test = np.array(X_test)
 print(X_test)
 
 
-# In[71]:
+# In[132]:
 
 
 # Reshape data 
 X_test = np.reshape(X_test,(X_test.shape[0], X_test.shape[1], 1))
 
 
-# In[72]:
+# In[134]:
 
 
 # Get the predicted scale price 
 pred_price = model.predict(X_test)
 
 
-# In[73]:
+# In[135]:
 
 
 # Undo the scaling 
@@ -328,7 +328,7 @@ pred_price = scaler.inverse_transform(pred_price)
 print(pred_price)
 
 
-# In[74]:
+# In[136]:
 
 
 apple_quote2 = web.DataReader('AAPL', data_source='yahoo', start='2019-12-18', end='2019-12-18')
