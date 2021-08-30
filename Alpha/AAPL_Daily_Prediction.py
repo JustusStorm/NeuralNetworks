@@ -51,6 +51,7 @@ plt.title('AAPL price history')
 plt.plot(df['Close'])
 plt.xlabel('Date', fontsize=18)
 plt.ylabel('Close USD Price', fontsize=18)
+plt.show()
 
 
 # ## Organize Data/Clean Data
@@ -245,6 +246,7 @@ plt.ylabel('Close Price (USD)', fontsize=18)
 plt.plot(train['Close'])
 plt.plot(valid[['Close', 'Predictions']])
 plt.legend(['Train', 'Val', 'Predictions'], loc='lower right')
+plt.show()
 
 
 # In[122]:
