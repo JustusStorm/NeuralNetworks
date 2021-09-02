@@ -113,3 +113,69 @@ plt.ylabel('Wind Y [m/s]')
 ax = plt.gca()
 ax.axis('tight')
 plt.show()
+
+
+
+timestamp_s = date_time.map(pd.Timestamp.timestamp)
+
+
+
+
+day = 24*60*60
+year = (365.2425)*day
+
+df['Day sin'] = np.sin(timestamp_s * (2 * np.pi / day))
+df['Day cos'] = np.cos(timestamp_s * (2 * np.pi / day))
+df['Year sin'] = np.sin(timestamp_s * (2 * np.pi / year))
+df['Year cos'] = np.cos(timestamp_s * (2 * np.pi / year))
+
+
+
+
+plt.plot(np.array(df['Day sin'])[:25])
+plt.plot(np.array(df['Day cos'])[:25])
+plt.xlabel('Time [h]')
+plt.title('Time of day signal')
+
+
+
+
+fft = tf.signal.rfft(df['T (degC)'])
+f_per_dataset = np.arange(0, len(fft))
+
+n_samples_h = len(df['T (degC)'])
+hours_per_year = 24*365.2524
+years_per_dataset = n_samples_h/(hours_per_year)
+
+f_per_year = f_per_dataset/years_per_dataset
+plt.step(f_per_year, np.abs(fft))
+plt.xscale('log')
+plt.ylim(0, 400000)
+plt.xlim([0.1, max(plt.xlim())])
+plt.xticks([1, 365.2524], labels=['1/Year', '1/day'])
+_ = plt.xlabel('Frequency (log scale)')
+
+
+
+
+
+# Split the data 
+column_indices = {name: i for i, name in enumerate(df.columns)}
+
+n = len(df)
+train_df = df[0:int(n*0.7)]
+val_df = df[int(n*0.7):int(n*0.9)]
+test_df = df[int(n*0.9):]
+
+num_features = df.shape[1]
+
+
+
+# Normalize the data 
+train_mean = train_df.mean()
+train_std = train_df.std()
+
+train_df = (train_df - train_mean) / train_std
+val_df = (val_df - train_mean) / train_std
+test_df = (test_df - train_mean) / train_std
+

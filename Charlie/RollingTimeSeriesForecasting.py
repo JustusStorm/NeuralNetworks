@@ -163,3 +163,78 @@ ax.xaxis.set_major_locator(plt.MaxNLocator(epochs))
 plt.legend(["Train", "Test"], loc="upper left")
 plt.grid()
 plt.show()
+
+
+
+
+
+
+
+
+'''Multi-Step Time SEries Predictions'''
+
+# Settings and Model Labels
+rolling_forecast_range = 30
+titletext = "Forecast Chart Model A"
+ms = [
+    ["epochs", epochs],
+    ["batch_size", batch_size],
+    ["lstm_neuron_number", n_neurons],
+    ["rolling_forecast_range", rolling_forecast_range],
+    ["layers", "LSTM, DENSE(1)"],
+]
+settings_text = ""
+lms = len(ms)
+for i in range(0, lms):
+    settings_text += ms[i][0] + ": " + str(ms[i][1])
+    
+    if i < lms - 1:
+        settings_text = settings_text + ",  "
+
+# Making a Multi-Step Prediction
+new_df = df.filter(["valid"])
+for i in range(0, rolling_forecast_range):
+    last_values = new_df[-n_neurons:].values
+    last_values_scaled = scaler.transform(last_values)
+    X_input = []
+    X_input.append(last_values_scaled)
+    X_input = np.array(X_input)
+    X_test = np.reshape(X_input, (X_input.shape[0], X_input.shape[1], 1))
+    pred_value = model.predict(X_input)
+    pred_value_unscaled = scaler.inverse_transform(pred_value)
+    pred_value_f = round(pred_value_unscaled[0, 0], 4)
+    next_index = new_df.iloc[[-1]].index.values + 1
+    new_df = new_df.append(pd.DataFrame({"valid": pred_value_f}, index=next_index))
+    new_df_length = new_df.size
+forecast = new_df[new_df_length - rolling_forecast_range : new_df_length].rename(
+    columns={"valid": "Forecast"}
+)
+
+
+#Visualize the results
+validxs = valid.copy()
+dflen = new_df.size - 1
+validxs.insert(2, "Forecast", forecast, True)
+dfs = pd.concat([validxs, forecast], sort=False)
+dfs.at[dflen, "Forecast"] = dfs.at[dflen, "Predictions"]
+
+# Zoom in to a closer timeframe
+dfs = dfs[dfs.index > 200]
+yt = dfs[["valid"]]
+yv = dfs[["Predictions"]]
+yz = dfs[["Forecast"]]
+xz = dfs[["Forecast"]].index
+
+# Visualize the data
+fig, ax1 = plt.subplots(figsize=(16, 5), sharex=True)
+ax1.tick_params(axis="x", rotation=0, labelsize=10, length=0)
+ax1.xaxis.set_major_locator(plt.MaxNLocator(30))
+plt.title('Forecast Basic Model', fontsize=18)
+plt.plot(yt, color="#039dfc", linewidth=1.5)
+plt.plot(yv, color="#F9A048", linewidth=1.5)
+plt.scatter(xz, yz, color="#F332E6", linewidth=1.0)
+plt.plot(yz, color="#F332E6", linewidth=0.5)
+plt.legend(["Ground Truth", "TestPredictions", "Forecast"], loc="upper left")
+ax1.annotate('ModelSettings: ' + settings_text, xy=(0.06, .015),  xycoords='figure fraction', horizontalalignment='left', verticalalignment='bottom', fontsize=10)
+plt.grid()
+plt.show()
