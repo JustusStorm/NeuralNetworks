@@ -2,7 +2,7 @@
 #https://machinelearningmastery.com/multi-step-time-series-forecasting-long-short-term-memory-networks-python/
 
 
-
+import pandas as pd
 from pandas import DataFrame
 from pandas import Series
 from pandas import concat
@@ -18,8 +18,8 @@ from matplotlib import pyplot
 from numpy import array
 
 # date-time parsing function for loading the dataset
-def parser(x):
-	return datetime.strptime('190'+x, '%Y-%m')
+# def parser(x):
+# 	return datetime.strptime('190'+x, '%Y-%m')
 
 # convert time series into supervised learning problem
 def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
@@ -49,8 +49,6 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
 def difference(dataset, interval=1):
 	diff = list()
 	for i in range(interval, len(dataset)):
-		print(dataset[i])
-		print(dataset[i-interval])
 		value = dataset[i] - dataset[i - interval]
 		diff.append(value)
 	return Series(diff)
@@ -161,8 +159,24 @@ def plot_forecasts(series, forecasts, n_test):
 	# show the plot
 	pyplot.show()
 
+# combines date and time into one column for data maniplation
+def if_date_and_time_combine(series):
+	
+	print(series['Close', ])
+	print(series.values)
+	#print(series['CLose'])
+	#print(series['CLose'].values)
+	print(series[0].values)
+	print(series[0][1])
+
+
+
+
+
 # load dataset
-series = read_csv("C:\\Users\\12569\\Desktop\\code\\NeuralNetwork\\JupyterNotebook\\NeuralNetworks\\Charlie\\shampooDb.csv", header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)
+series = read_csv("C:\\Users\\12569\\Desktop\\code\\NeuralNetwork\\JupyterNotebook\\NeuralNetworks\\@MES00_Micro-e-mini-S&P_5min_20years.txt", header=0, parse_dates=[0], index_col=0, squeeze=True)
+# If there is date and time columns, then combine them into one column
+series = if_date_and_time_combine(series)
 # configure
 n_lag = 1
 n_seq = 3
