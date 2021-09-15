@@ -16,11 +16,6 @@ class MarketTradingEnv(gym.Env):
         'render.modes': ['human']        
         }
 
-    # MAX_ACCOUNT_BALANCE = null
-    # MAX_SHARE_PRICE = null
-    # MAX_NUM_SHARES = null
-    # INITIAL_ACCOUNT_BALANCE = null
-    # MAX_STEPS = null
 
     def __init__(self, df, MAX_ACCOUNT_BALANCE: 1000000, MAX_SHARE_PRICE: 1000000, MAX_NUM_SHARES: 1, INITIAL_ACCOUNT_BALANCE: 20000, MAX_STEPS: 120):
         super(MarketTradingEnv, self).__init__()
@@ -45,6 +40,7 @@ class MarketTradingEnv(gym.Env):
 
     def _next_observation(self):
         # Get the data points for the last 5 days and scale to between 0-1
+        print((self.df.loc[self.current_step: self.current_step + 5, 'Low'].values)/self.MAX_SHARE_PRICE)
         frame = np.array([
             self.df.loc[self.current_step: self.current_step +
                         5, 'Open'].values / self.MAX_SHARE_PRICE,
@@ -57,6 +53,7 @@ class MarketTradingEnv(gym.Env):
             self.df.loc[self.current_step: self.current_step +
                         5, 'Volume'].values / self.MAX_NUM_SHARES,
         ])
+
         # Append additional data and scale each value to between 0-1
         obs = np.append(frame, [[
             self.balance / self.MAX_ACCOUNT_BALANCE,

@@ -25,7 +25,7 @@ env = DummyVecEnv([lambda: MarketTradingEnv(
     ])
 
 model = PPO('MlpPolicy', env, verbose=1)
-model.learn(total_timesteps=120)
+model.learn(total_timesteps=240)
 
 
 obs = env.reset()
